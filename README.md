@@ -1,4 +1,4 @@
-Universidad Nacional Autónoma de México 
+Universidad Nacional Autónoma de México\n
 Facultad de Ingeniería 
 División de Ingeniería Eléctrica
 Laboratorio de computación gráfica e interacción humano computadora
