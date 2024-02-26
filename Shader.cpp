@@ -7,6 +7,7 @@ Shader::Shader()
 	shaderID = 0;
 	uniformModel = 0;
 	uniformProjection = 0;
+	//Ir agregando nuevas variables Uniform
 
 }
 
@@ -79,17 +80,18 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
-
+	//Ir agregando nuevas variables Uniform
 }
 
 GLuint Shader::getProjectLocation()
 {
 	return uniformProjection;
 }
-GLuint Shader::getModelLoaction()
+GLuint Shader::getModelLocation()
 {	
 	return uniformModel;
 }
+//agregar get para nuevas variables uniform
 
 void Shader::useShader()
 {
@@ -106,6 +108,7 @@ void Shader::ClearShader()
 	}
 	uniformModel = 0;
 	uniformProjection = 0;
+	//Ir agregando nuevas variables Uniform para limpiar 
 }
 void Shader:: AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType) //Función para agregar los shaders a la tarjeta gráfica
 																			 //the Program recibe los datos de theShader
