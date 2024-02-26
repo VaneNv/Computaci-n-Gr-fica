@@ -1,0 +1,36 @@
+﻿  Camera.cpp
+  Mesh.cpp
+  practica3.cpp
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(27,36): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(194,16): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(236,32): warning C4244: 'argumento': conversión de 'double' a '_Ty'; posible pérdida de datos
+          with
+          [
+              _Ty=GLfloat
+          ]
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(238,32): warning C4244: 'argumento': conversión de 'double' a '_Ty'; posible pérdida de datos
+          with
+          [
+              _Ty=GLfloat
+          ]
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(334,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\practica3.cpp(336,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+  Shader.cpp
+  Sphere.cpp
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Sphere.cpp(39,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Sphere.cpp(43,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+  Window.cpp
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(149,22): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(150,22): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(154,28): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(155,40): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(157,21): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(158,21): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+  Generando código...
+C:\Users\CGIH2\Music\LabCGVN\Prac3\Prac3\Window.cpp(77): warning C4715: 'Window::Initialise': no todas las rutas de acceso de control devuelven un valor
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  Prac3.vcxproj -> C:\Users\CGIH2\Music\LabCGVN\Prac3\Debug\Prac3.exe
