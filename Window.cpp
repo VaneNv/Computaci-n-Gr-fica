@@ -38,7 +38,7 @@ int Window::Initialise()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	//CREAR VENTANA
-	mainWindow = glfwCreateWindow(width, height, "Practica XX: Nombre de la práctica", NULL, NULL);
+	mainWindow = glfwCreateWindow(width, height, "Ejercicio 03: Modelado Geometrico", NULL, NULL);
 
 	if (!mainWindow)
 	{
