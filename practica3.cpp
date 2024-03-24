@@ -1,4 +1,4 @@
-//práctica 3: Modelado Geométrico y Cámara Sintética.
+////práctica 3: Modelado Geométrico y Cámara Sintética.
 #include <stdio.h>
 #include <string.h>
 #include<cmath>
@@ -37,10 +37,7 @@ vector<Shader>shaderList;
 static const char* vShader = "shaders/shader.vert";
 static const char* fShader = "shaders/shader.frag";
 static const char* vShaderColor = "shaders/shadercolor.vert";
-Sphere sp = Sphere(1.0, 20, 20); //recibe radio, slices, stacks
-
-
-
+Sphere sp = Sphere(0.5, 20, 20); //recibe radio, slices, stacks
 
 void CrearCubo()
 {
@@ -93,15 +90,16 @@ void CrearPiramideTriangular()
 
 	};
 	GLfloat vertices_piramide_triangular[] = {
-		-0.5f, -0.5f,0.0f,	//0
-		0.5f,-0.5f,0.0f,	//1
-		0.0f,0.5f, -0.25f,	//2
-		0.0f,-0.5f,-0.5f,	//3
+	-1.0f, 0.0f, 0.577f,  //0
+	1.0f, 0.0f, 0.577f,   //1
+	0.0f,  1.154f, 0.0f,  //2
+	0.0f,  0.0f,   -1.0f, //3
 
 	};
 	Mesh* obj1 = new Mesh();
 	obj1->CreateMesh(vertices_piramide_triangular, indices_piramide_triangular, 12, 12);
 	meshList.push_back(obj1);
+
 
 }
 /*
@@ -292,44 +290,30 @@ int main()
 
 	CrearCubo();//índice 0 en MeshList
 	CrearPiramideTriangular();//índice 1 en MeshList
-	CrearCilindro(15, 1.0f);//índice 2 en MeshList
-	//prisma pentagonal (resolución,1.0f)
+	CrearCilindro(5, 1.0f);//índice 2 en MeshList
 	CrearCono(25, 2.0f);//índice 3 en MeshList
 	CrearPiramideCuadrangular();//índice 4 en MeshList
 	CreateShaders();
 
 
 
-	/*Cámara se usa el comando: glm::lookAt(vector de posición, vector de orientación, vector up));
-	En la clase Camera se reciben 5 datos:
-	glm::vec3 vector de posición,
-	glm::vec3 vector up,
-	GlFloat yaw rotación para girar hacia la derecha e izquierda
-	GlFloat pitch rotación para inclinar hacia arriba y abajo
-	GlFloat velocidad de desplazamiento,
-	GlFloat velocidad de vuelta o de giro
-	Se usa el Mouse y las teclas WASD y su posición inicial está en 0,0,1 y ve hacia 0,0,-1.
-	*/
-
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 0.3f, 0.3f);
+	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 0.1f, 0.3f);
 
 
 	GLuint uniformProjection = 0;
 	GLuint uniformModel = 0;
 	GLuint uniformView = 0;
 	GLuint uniformColor = 0;
-	//aplica color a las geometrias 
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
-	//glm::mat4 projection = glm::ortho(-1, 1, -1, 1, 1, 10);
 
 	//Loop mientras no se cierra la ventana
-	sp.init(); //inicializar esfera
-	sp.load();//enviar la esfera al shader
+	//sp.init(); //inicializar esfera
+	//sp.load();//enviar la esfera al shade
 
 	glm::mat4 model(1.0);//Inicializar matriz de Modelo 4x4
 
 	glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f); //inicializar Color para enviar a variable Uniform;
-
+	float angle = 60.f;
 	while (!mainWindow.getShouldClose())
 	{
 
@@ -344,7 +328,7 @@ int main()
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		//Limpiar la ventana
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Se agrega limpiar el buffer de profundidad
 		shaderList[0].useShader();
 		uniformModel = shaderList[0].getModelLocation();
@@ -352,224 +336,613 @@ int main()
 		uniformView = shaderList[0].getViewLocation();
 		uniformColor = shaderList[0].getColorLocation();
 
-		//Dibujando la casa 
-
-
-//Cubo rojo
+		//Pirámide negra
 		model = glm::mat4(1.0);
-		color = glm::vec3(1.0f, 0.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(0.0f, 2.5f, 0.0f)); //Asignando el cubo rojo en el origen, un poco desplazado hacia arriba 
-		//para eviar que choque con el suelo
-		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(2.2f, 3.5f, 2.2f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
+		color = glm::vec3(0.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));//Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular 
+
+
+		//Cara verde
+
+			//1
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-1.4f, 0.145f, -2.08f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//2
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, 0.145f, -2.08f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//3
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.7f, 0.8, -2.28f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(55.0f), glm::vec3(20.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//4
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.7f, 1.4, -2.45f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//5
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(1.4f, 0.145f, -2.08f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//6
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.7f, 0.8, -2.28f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(55.0f), glm::vec3(20.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//7
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.7f, 1.4, -2.45f));
+		//Rotaciones de pirámides 
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//8
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, 2.1f, -2.7f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(55.0f), glm::vec3(20.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//9
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, 2.7, -2.85f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(0.0f, 0.7f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+
+		//Cara roja
+
+			//1
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-1.5f, 0.145f, -2.3));
+		//Rotación de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja cpirámide triangular
+
+		//2
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.8f, 1.4, -2.7));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//3
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-1.0f, 1.2f, -2.3f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(-1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		//meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+	//4
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.8f, 0.145f, -3.35));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//la línea de proyección solo se manda una vez a menos que en tiempo de ejecución
+		//se programe cambio entre proyección ortogonal y perspectiva
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		meshList[1]->RenderMesh(); //dibuja cubo y pirámide triangular
 
-		//Piso
-				//El suelo no tiene un translate porque es la base de todo la casa, por lo que lo tomamos como referncia para poder dibujar de manera
-				//más sencilla
-		model = glm::mat4(1.0f);
-		color = glm::vec3(0.4f, 1.0f, 0.5f);
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		model = glm::scale(model, glm::vec3(15.0f, 0.1f, 20.0f)); //Tamaño del suelo
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model)); //FALSE ES PARA QUE NO SEA TRANSPUESTA
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		//5
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.13f, 2.7, -3.08f));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
-		//Techo
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		model = glm::mat4(1.0f);
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//7
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.15f, 1.4, -3.75));
+		//Rotaciones de pirámide
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//vemos falta acomodarlo
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-1.4f, 1.2f, -5.0f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(-1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(190.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		//meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+	//9
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.15f, 0.145f, -4.41f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+
+		//Cara azul
+
+			//1
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.1f, 2.7f, -3.05f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
 		color = glm::vec3(0.0f, 0.0f, 1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 6.55f, 0.0f));
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		model = glm::scale(model, glm::vec3(6.0f, 3.0f, 6.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));//FALSE ES PARA QUE NO SEA TRANSPUESTA
-		meshList[4]->RenderMeshGeometry(); //dibuja las figuras geométricas cilindro, cono, pirámide base cuadrangular
-
-		//Puerta
-
+		//2
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(2.5f, 1.0f, 0.0f)); //Asignando la puerta principal
-		model = glm::scale(model, glm::vec3(0.3f, 2.0f, 1.0f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.8f, 1.4f, -2.65f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Ventana Izquierda
-
+		//4
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(2.5f, 3.5f, 1.3f)); //Asignando la ventana izquierda vista desde enfrente
-		model = glm::scale(model, glm::vec3(0.3f, 1.5f, 1.5f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.15f, 1.4f, -3.75f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Ventana Derecha
-
+		//5
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(2.5f, 3.5f, -1.3f)); //Asignando la ventana derecha vista desde enfrente
-		model = glm::scale(model, glm::vec3(0.3f, 1.5f, 1.5f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(1.55f, 0.15f, -2.27));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.5f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Ventanas lado Izquierdo
-
-				//derecha
+		//7
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(1.3f, 3.5f, 2.5f)); //Asignando la ventana derecha desde la vista izq.
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 0.3f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.85f, 0.145f, -3.37f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//izquierda
+		//9
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(-1.3f, 3.5f, 2.5f)); //Asignando la ventana izquierdo desde la vista izq.
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 0.3f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.15f, 0.145f, -4.39f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Ventanas lado derecho
-
-				//izquierda
+		//8
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(1.3f, 3.5f, -2.5f)); //Asignando la ventana izquierda desde la vista der.
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 0.3f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(1.0f, 1.2f, -3.39f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(-1.0f, -1.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		//meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//derecha
+
+//Cara rosa
+
+	//1
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 1.0f, 0.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(-1.3f, 3.5f, -2.5f)); //Asignando la ventana derecha desde la vista der.
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 0.3f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.0f, -0.001f, -4.3f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Ventana Trasera
-
+		//2
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.0f, 0.0f, 1.0f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(-1.5f, 3.33f, 0.0f)); //Asignando la ventana trasera
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(1.4f, -0.001f, -2.25f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		sp.render(); //dibuja esfera
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Árbol derecho 
-
-				//Hojas
-		model = glm::mat4(1.0f);
-		color = glm::vec3(0.0f, 0.5f, 0.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 2.5f, 5.0f));//Asignando las Hojas del Árbol
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-
-		model = glm::scale(model, glm::vec3(2.5f, 3.0f, 2.5f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));//FALSE ES PARA QUE NO SEA TRANSPUESTA
-		meshList[4]->RenderMeshGeometry(); //dibuja las figuras geométricas cilindro, cono, pirámide base cuadrangular
-
-		//Tronco
+		//3
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.478f, 0.255f, 0.067f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(0.0f, 0.3f, 5.0f)); //Asignando el cubo rojo en el origen, un poco desplazado hacia arriba 
-		//para eviar que choque con el suelo
-		model = glm::scale(model, glm::vec3(0.9f, 1.3f, 0.9f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(-1.3f, -0.001f, -2.25f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
-		//Árbol izquierdo
-
-				//Hojas
-		model = glm::mat4(1.0f);
-		color = glm::vec3(0.0f, 0.5f, 0.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 2.5f, -5.0f));//Asignando las Hojas del Árbol
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-
-		model = glm::scale(model, glm::vec3(2.5f, 3.0f, 2.5f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));//FALSE ES PARA QUE NO SEA TRANSPUESTA
-		meshList[4]->RenderMeshGeometry(); //dibuja las figuras geométricas cilindro, cono, pirámide base cuadrangular
-
-		//Tronco
+		//4
 		model = glm::mat4(1.0);
-		color = glm::vec3(0.478f, 0.255f, 0.067f); //Designando el color del cubo
-
-		model = glm::translate(model, glm::vec3(0.0f, 0.3f, -5.0f)); //Asignando el cubo rojo en el origen, un poco desplazado hacia arriba 
-		//para eviar que choque con el suelo
-		model = glm::scale(model, glm::vec3(0.9f, 1.3f, 0.9f)); //Tamaño del cubo
+		model = glm::translate(model, glm::vec3(0.67f, -0.001f, -3.25f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
+		//5
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -0.001f, -2.3f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//6
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.7f, -0.001f, -3.25f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//7 
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.77f, -0.001f, -2.5f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, -1.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//8 
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.7f, -0.001f, -2.5f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, -1.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
+
+		//9
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-0.0009f, -0.001f, -3.5f));
+		//Rotaciones de pirámides
+		model = glm::scale(model, glm::vec3(0.55f, 0.875f, 0.55f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, -1.0f));
+		model = glm::rotate(model, glm::radians(mainWindow.getrotax()), glm::vec3(1.0f, 0.0f, 0.0f));  //Rota sobre el eje x
+		model = glm::rotate(model, glm::radians(mainWindow.getrotay()), glm::vec3(0.0f, 1.0f, 0.0f));  //al presionar la tecla Y se rota sobre el eje y
+		model = glm::rotate(model, glm::radians(mainWindow.getrotaz()), glm::vec3(0.0f, 0.0f, 1.0f)); //Rota sobre el eje z
+
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+		color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //Cambia color asignado 
+		meshList[1]->RenderMesh(); //dibuja pirámide triangular
 
 		glUseProgram(0);
 		mainWindow.swapBuffers();
 	}
 	return 0;
 }
-
-
